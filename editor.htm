@@ -1,0 +1,34 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+  <head> 
+    <meta charset="utf-8"> 
+    <title>Brime</title> 
+    <link rel="stylesheet" href="css/editor.css">
+    <script src="js/lib/mootools-1.4.4.js"></script> 
+    <script src="js/lib/fabric.js"></script>
+    
+    <script src="js/modules/module.js"></script>
+    <script src="js/modules/editor_module.js"></script>
+    <script src="js/modules/layers_module.js"></script>
+    <script src="js/brime.js"></script>
+    <script>
+      window.addEvent('load', function() {
+        new Brime({
+          img_url: 'img/test.jpg',
+          save_url: '',
+          editor: {
+            width: 500,
+            height: 500,
+            background_image: './img/bg.jpg'
+          },
+          layers: {
+            width: 500,
+            height: 100
+          },
+        });
+      });
+    </script>
+  </head>
+  <body>
+  <body>
+</html>
