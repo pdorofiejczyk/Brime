@@ -13,19 +13,21 @@
     <script src="js/brime.js"></script>
     <script>
       window.addEvent('load', function() {
-        new Brime({
+        var brime = new Brime({
           img_url: 'img/test.jpg',
           save_url: '',
           editor: {
             width: 500,
             height: 500,
-            background_image: './img/bg.jpg'
+            background_image: './img/checked.jpg'
           },
           layers: {
             width: 500,
             height: 100
-          },
+          }
         });
+        
+        brime.load_image('img/party.jpg');
       });
     </script>
   </head>

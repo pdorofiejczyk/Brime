@@ -5,6 +5,12 @@ Element.prototype.DOMInject = function(l, e) {
   }
 }
 
+fabric.Object.prototype.fullScale = function(value) {
+  this.scale(value);
+  this.setTop(this.getTop() * value);
+  this.setLeft(this.getLeft() * value);
+}
+
 var Brime = new Class({
   Implements: Options,
   
@@ -26,7 +32,7 @@ var Brime = new Class({
     
     this._layers.get_container().addEvent('DOMInjected', function() {
       if(this.options.img_url) {
-        fabric.Image.fromURL(this.options.img_url, this._layers.on_new_layer.bind(this._layers));
+        this.load_image(this.options.img_url);
       }
     }.bind(this));
     
@@ -37,7 +43,15 @@ var Brime = new Class({
   },
   
   _init_events: function() {
-    this._layers.addEvent('newLayer', this._editor.on_image.bind(this._editor));
+    this._editor.addEvent('newObject', this._layers.on_new_layer.bind(this._layers));
+    this._editor.addEvent('objModified', this._layers.on_obj_modified.bind(this._layers));
+    this._editor.addEvent('objSelected', this._layers.on_obj_selected.bind(this._layers));
+    
+    this._layers.addEvent('layerSelected', this._editor.on_obj_selected.bind(this._editor));
+  },
+  
+  load_image: function(url) {
+    fabric.Image.fromURL(url, this._editor.on_obj.bind(this._editor));
   }
   
 });
