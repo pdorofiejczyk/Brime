@@ -1,0 +1,18 @@
+#layers canvas {
+  display: block;
+  border: 1px solid #000;
+  background: url('../img/checked.jpg') repeat;
+}
+
+#layers .layer.selected canvas {
+  border: 2px solid blue;
+}
+
+#layers .layer {
+  float: left;
+  margin: 10px;
+}
+
+canvas#editor {
+  background: url('../img/checked.jpg') repeat;
+}
