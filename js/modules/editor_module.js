@@ -5,10 +5,13 @@ var EditorModule = new Class({
   
   _canvas: null,
   
+  _objects: null,
+  
   init: function() {},
   
   _on_dom_injected: function() {
     this._canvas = new fabric.Canvas(this._container);
+    this._objects = this._canvas.getObjects();
     this._init_observers();
   },
   
@@ -38,5 +41,21 @@ var EditorModule = new Class({
   
   on_obj_selected: function(obj) {
     this._canvas.setActiveObject(obj);
+  },
+  
+  on_obj_bring_forward: function(obj) {
+    var id = this._objects.indexOf(obj);
+    if(this._objects[id+1] != undefined) {
+      this._canvas.remove(obj);
+      this._canvas.insertAt(obj, id+1, false);
+    }
+  },
+  
+  on_obj_send_backwards: function(obj) {
+    var id = this._objects.indexOf(obj);
+    if(this._objects[id-1] != undefined) {
+      this._canvas.remove(obj);
+      this._canvas.insertAt(obj, id-1, false);
+    }
   }
 });

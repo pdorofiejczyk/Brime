@@ -23,7 +23,7 @@ var Brime = new Class({
   initialize: function(options) {
     this.setOptions(options);
     
-    this.options.layers.scale = this.options.layers.height / this.options.editor.height;
+    this.options.layers.scale = (this.options.layers.width > this.options.layers.height ? this.options.layers.height : this.options.layers.width) / this.options.editor.height;
     
     this._body = $(document.body);
     
@@ -48,6 +48,8 @@ var Brime = new Class({
     this._editor.addEvent('objSelected', this._layers.on_obj_selected.bind(this._layers));
     
     this._layers.addEvent('layerSelected', this._editor.on_obj_selected.bind(this._editor));
+    this._layers.addEvent('bringForward', this._editor.on_obj_bring_forward.bind(this._editor));
+    this._layers.addEvent('sendBackwards', this._editor.on_obj_send_backwards.bind(this._editor));
   },
   
   load_image: function(url) {

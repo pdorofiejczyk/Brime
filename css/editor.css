@@ -1,7 +1,18 @@
+#layers {
+  position: relative;
+  float: left;
+}
+
+#layers #layers_wrapper {
+  position: absolute;
+  bottom: 0;
+}
+
 #layers canvas {
   display: block;
   border: 1px solid #000;
   background: url('../img/checked.jpg') repeat;
+  float: left;
 }
 
 #layers .layer.selected canvas {
@@ -11,8 +22,22 @@
 #layers .layer {
   float: left;
   margin: 10px;
+  width: 115px;
+}
+
+#layers .buttons {
+  float: left;
+  cursor: pointer;
+}
+
+#layers .layer .name {
+  clear: both;
 }
 
 canvas#editor {
   background: url('../img/checked.jpg') repeat;
+}
+
+.canvas-container {
+  float: left;
 }
