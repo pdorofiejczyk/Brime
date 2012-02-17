@@ -1,11 +1,16 @@
 #layers {
   position: relative;
   float: left;
+  overflow: scroll;
 }
 
 #layers #layers_wrapper {
   position: absolute;
   bottom: 0;
+}
+
+#layers.oversize #layers_wrapper {
+  position: relative;
 }
 
 #layers canvas {
@@ -21,12 +26,15 @@
 
 #layers .layer {
   float: left;
+  position: relative;
   margin: 10px;
   width: 115px;
 }
 
 #layers .buttons {
-  float: left;
+  position: absolute;
+  right: 0;
+  top: 0;
   cursor: pointer;
 }
 
@@ -40,4 +48,9 @@ canvas#editor {
 
 .canvas-container {
   float: left;
+}
+
+.load_file {
+  display: block;
+  margin-bottom: 10px;
 }

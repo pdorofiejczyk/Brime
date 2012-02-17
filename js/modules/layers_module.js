@@ -9,36 +9,31 @@ var LayersModule = new Class({
   
   _layers: [],
   
-  _layers_counter: 0,
-  
   _selected_layer: null,
   
   _layers_wrapper: null,
   
   init: function() {
     this._container.setStyles({
-      width: this.options.width,
-      height: this.options.height
+      width: this.options.width + 50,
+      height: this.options.height + 50
     });
     
     this._layers_wrapper = new Element('div', {'id': 'layers_wrapper'});
       this._layers_wrapper.inject(this._container);
   },
   
-  _get_obj_layer: function(obj) {
-    return this._layers[this._obj_to_layer[obj]];
-  },
-  
   _step_move_layer: function(obj, direction) {
-    direction = direction == 'before' ? direction : 'after';
+    direction = direction == 'forward' ? 'before' : 'after';
     
-    var layer_id = this._obj_to_layer[obj];
+    var layer = this._obj_to_layer[obj];
+
+    var layer_id = this._layers.indexOf(layer);
     var layer2_id = direction == 'before' ? layer_id+1 : layer_id-1;
     
-    var layer = this._layers[layer_id];
-    var layer2 = this._layers[layer2_id];
+    console.log(layer_id, layer2_id);
     
-    console.log(layer_id, layer, layer2_id, layer2);
+    var layer2 = this._layers[layer2_id];
     
     if(layer2 != undefined) {
       layer.get_container().inject(layer2.get_container(), direction);
@@ -46,27 +41,35 @@ var LayersModule = new Class({
       this._layers[layer_id] = layer2;
       this._layers[layer2_id] = layer;
       
-      var obj2 = this._layer_to_obj[layer2_id];
-      
-      this._obj_to_layer[obj] = layer2_id;
-      this._obj_to_layer[obj2] = layer_id;
-      
-      this._layer_to_obj[layer_id] = obj2;
-      this._layer_to_obj[layer2_id] = obj;
-      
-      console.log(this._layers);
-      
       return true;
     }
     
     return false;
   },
   
+  _oversize_check: function() {
+    if (this.options.width < this.options.height) {
+      var wrapper_size = this._layers_wrapper.getSize().y;
+      var size = this.options.height;
+    } 
+    else {
+      var wrapper_size = this._layers_wrapper.getSize().x;
+      var size = this.options.width;
+    }
+    
+    if(wrapper_size > size) {
+      this._container.addClass('oversize');
+    }
+    else {
+      this._container.removeClass('oversize');
+    }
+  },
+  
   on_obj_modified: function(obj) {
     var small_object = Object.clone(obj);
       small_object.fullScale(this.options.scale);
       
-    this._get_obj_layer(obj).update_obj(small_object);
+    this._obj_to_layer[obj].update_obj(small_object);
   },
   
   on_obj_selected: function(obj) {
@@ -74,22 +77,49 @@ var LayersModule = new Class({
       this._selected_layer.deselect();
     }
     
-    this._selected_layer = this._get_obj_layer(obj);
+    this._selected_layer = this._obj_to_layer[obj];
     this._selected_layer.select();
   },
   
+  on_selection_cleared: function() {
+    if(this._selected_layer != null) {
+      this._selected_layer.deselect();
+      this._selected_layer = null;
+    }
+  },
+
+  delete_layer: function(obj) {
+    var layer = this._obj_to_layer[obj];
+    
+    if(confirm('Czy na pewno chcesz usunąć warstwę '+layer.get_name()+' ?')) {
+      if(layer.get_container().dispose()) {
+        this._oversize_check();
+        delete this._obj_to_layer[obj];
+        delete this._layer_to_obj[layer];
+        this._layers.splice(this._layers.indexOf(layer), 1);
+        
+        this.fireEvent('delete', obj);
+      }
+    }
+  },
+  
   on_new_layer: function(obj) {
-    this._obj_to_layer[obj] = this._layers_counter;
-    this._layer_to_obj[this._layers_counter] = obj;
+    var new_id = this._layers.length;
+    
     var small_object = Object.clone(obj);
       small_object.fullScale(this.options.scale);
       console.log(this.options.scale, small_object);
     
-    this._layers[this._layers_counter] = new Layer(small_object, 'Layer '+this._layers_counter, this.options.width, this.options.height);
+    var layer = new Layer(small_object, 'Warstwa '+new_id, this.options.width, this.options.height);
     
-    this._layers[this._layers_counter].get_container().DOMInject(this._layers_wrapper, 'top');
+    this._obj_to_layer[obj] = layer;
+    this._layer_to_obj[layer] = obj;
     
-    this._layers[this._layers_counter].addEvent('layerSelected', function(obj) {
+    layer.get_container().addEvent('DOMInjected', this._oversize_check.bind(this));
+    
+    layer.get_container().DOMInject(this._layers_wrapper, 'top');
+    
+    layer.addEvent('layerSelected', function(obj) {
       if(this._selected_layer != null) {
         this._selected_layer.deselect();
       }
@@ -97,19 +127,25 @@ var LayersModule = new Class({
       this.fireEvent('layerSelected', obj);
     }.bind(this, obj));
     
-    this._layers[this._layers_counter].addEvent('bringForward', function(obj) {
-      if(this._step_move_layer(obj, 'before')) {
+    layer.addEvent('bringForward', function(obj) {
+      if(this._step_move_layer(obj, 'forward')) {
         this.fireEvent('bringForward', obj);
       }
     }.bind(this, obj));
     
-    this._layers[this._layers_counter].addEvent('sendBackwards', function(obj) {
-      if(this._step_move_layer(obj, 'after')) {
+    layer.addEvent('sendBackwards', function(obj) {
+      if(this._step_move_layer(obj, 'backward')) {
         this.fireEvent('sendBackwards', obj);
       }
     }.bind(this, obj));
+
+    layer.addEvent('delete', function(obj) {
+      if(this.delete_layer(obj)) {
+        this.fireEvent('delete', obj);
+      }
+    }.bind(this, obj));
     
-    this._layers_counter++;
+    this._layers.push(layer);
   }
   
   
@@ -126,10 +162,14 @@ var Layer = new Class({
   
   _object: null,
   
+  _layer_name: '',
+  
   initialize: function(object, layer_name, width, height) {
     this._object = object;
     this._object.hasControls = false;
     this._object.hasBorders = false;
+    
+    this._layer_name = layer_name;
   
     this._container = new Element('div', {'class': 'layer'});
     
@@ -141,10 +181,12 @@ var Layer = new Class({
     
     this._bring_forward_button = new Element('div', {'class': 'bring_forward_button', 'text': '^'});
       this._bring_forward_button.inject(buttons);
+    this._delete_button = new Element('div', {'class': 'delete_button', 'text': 'x'}); 
+      this._delete_button.inject(buttons);
     this._send_backwards_button = new Element('div', {'class': 'send_backwards_button', 'text': 'v'});
       this._send_backwards_button.inject(buttons);
     
-    var name_element = new Element('span', {'class': 'name', 'text': layer_name});
+    var name_element = new Element('span', {'class': 'name', 'text': this._layer_name});
       name_element.inject(this._container);
       
     this._container.addEvent('DOMInjected', function(){
@@ -168,6 +210,10 @@ var Layer = new Class({
     this._send_backwards_button.addEvent('click', function() {
       this.fireEvent('sendBackwards');
     }.bind(this));
+
+    this._delete_button.addEvent('click', function() {
+      this.fireEvent('delete');
+    }.bind(this));
   },
   
   update_obj: function(obj) {
@@ -188,5 +234,9 @@ var Layer = new Class({
   
   deselect: function() {
     this._container.removeClass('selected');
+  },
+  
+  get_name: function() {
+    return this._layer_name;
   }
 });

@@ -22,6 +22,7 @@ var EditorModule = new Class({
   _init_observers: function() {
     this._canvas.observe('object:modified', this._on_obj_modified.bind(this));
     this._canvas.observe('object:selected', this._on_obj_selected.bind(this));
+    this._canvas.observe('selection:cleared', this._on_selection_cleared.bind(this));
   },
   
   _on_obj_modified: function(obj) {
@@ -30,6 +31,10 @@ var EditorModule = new Class({
   
   _on_obj_selected: function(obj) {
     this.fireEvent('objSelected', obj.memo.target);
+  },
+  
+  _on_selection_cleared: function() {
+    this.fireEvent('selectionCleared');
   },
   
   on_obj: function(obj) {
@@ -57,5 +62,9 @@ var EditorModule = new Class({
       this._canvas.remove(obj);
       this._canvas.insertAt(obj, id-1, false);
     }
+  },
+  
+  on_delete: function(obj) {
+    this._canvas.remove(obj);
   }
 });

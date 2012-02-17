@@ -20,6 +20,8 @@ var Brime = new Class({
   
   _body: null,
   
+  _buttons: {},
+  
   initialize: function(options) {
     this.setOptions(options);
     
@@ -36,6 +38,20 @@ var Brime = new Class({
       }
     }.bind(this));
     
+    this._buttons.load_file = new Element('input', {'class':'load_file', 'type': 'file', 'name': 'files[]'});
+    this._buttons.load_file.addEvent('change', function(e) {
+    console.log(this._buttons.load_file.value);
+      if(e.target.files != '') {
+    		var reader = new FileReader();
+
+	      reader.onloadend = function (e) {
+		      this.load_image(e.target.result);
+	      }.bind(this);
+	      reader.readAsDataURL(e.target.files[0]);
+      }
+    }.bind(this));
+    
+    this._buttons.load_file.inject(this._body);
     this._editor.get_container().DOMInject(this._body);
     this._layers.get_container().DOMInject(this._body);
     
@@ -46,10 +62,12 @@ var Brime = new Class({
     this._editor.addEvent('newObject', this._layers.on_new_layer.bind(this._layers));
     this._editor.addEvent('objModified', this._layers.on_obj_modified.bind(this._layers));
     this._editor.addEvent('objSelected', this._layers.on_obj_selected.bind(this._layers));
+    this._editor.addEvent('selectionCleared', this._layers.on_selection_cleared.bind(this._layers));
     
     this._layers.addEvent('layerSelected', this._editor.on_obj_selected.bind(this._editor));
     this._layers.addEvent('bringForward', this._editor.on_obj_bring_forward.bind(this._editor));
     this._layers.addEvent('sendBackwards', this._editor.on_obj_send_backwards.bind(this._editor));
+    this._layers.addEvent('delete', this._editor.on_delete.bind(this._editor));
   },
   
   load_image: function(url) {
