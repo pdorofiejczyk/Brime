@@ -38,6 +38,24 @@
   cursor: pointer;
 }
 
+#layers .buttons .button {
+  width: 12px;
+  height: 12px;
+  text-indent: -9999px;
+}
+
+#layers .buttons .delete_button {
+  background: url(../img/icons/trash.png) no-repeat;
+}
+
+#layers .buttons .send_backwards_button {
+  background: url(../img/icons/arrow-down.png) no-repeat 1px 5px;
+}
+
+#layers .buttons .bring_forward_button {
+  background: url(../img/icons/arrow-up.png) no-repeat 1px 2px;
+}
+
 #layers .layer .name {
   clear: both;
 }
@@ -50,7 +68,25 @@ canvas#editor {
   float: left;
 }
 
-.load_file {
-  display: block;
-  margin-bottom: 10px;
+#buttons {
+  padding: 10px;
+}
+
+#load_file {
+  width: 25px;
+  height: 25px;
+  border: 1px solid black;
+  background: url(../img/icons/photo-add.png) no-repeat 4px 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+#load_file_form {
+  opacity: 0; 
+  filter:alpha(opacity: 0);
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

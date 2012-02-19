@@ -18,9 +18,9 @@ var Brime = new Class({
   
   _layers: null,
   
-  _body: null,
+  _buttons: null,
   
-  _buttons: {},
+  _body: null,
   
   initialize: function(options) {
     this.setOptions(options);
@@ -31,6 +31,7 @@ var Brime = new Class({
     
     this._editor = new EditorModule(this.options.editor);
     this._layers = new LayersModule(this.options.layers);
+    this._buttons = new ButtonsModule();
     
     this._layers.get_container().addEvent('DOMInjected', function() {
       if(this.options.img_url) {
@@ -38,20 +39,7 @@ var Brime = new Class({
       }
     }.bind(this));
     
-    this._buttons.load_file = new Element('input', {'class':'load_file', 'type': 'file', 'name': 'files[]'});
-    this._buttons.load_file.addEvent('change', function(e) {
-    console.log(this._buttons.load_file.value);
-      if(e.target.files != '') {
-    		var reader = new FileReader();
-
-	      reader.onloadend = function (e) {
-		      this.load_image(e.target.result);
-	      }.bind(this);
-	      reader.readAsDataURL(e.target.files[0]);
-      }
-    }.bind(this));
-    
-    this._buttons.load_file.inject(this._body);
+    this._buttons.get_container().DOMInject(this._body);
     this._editor.get_container().DOMInject(this._body);
     this._layers.get_container().DOMInject(this._body);
     
@@ -68,6 +56,8 @@ var Brime = new Class({
     this._layers.addEvent('bringForward', this._editor.on_obj_bring_forward.bind(this._editor));
     this._layers.addEvent('sendBackwards', this._editor.on_obj_send_backwards.bind(this._editor));
     this._layers.addEvent('delete', this._editor.on_delete.bind(this._editor));
+    
+    this._buttons.addEvent('fileLoaded', this.load_image.bind(this));
   },
   
   load_image: function(url) {

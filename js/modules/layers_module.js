@@ -179,11 +179,11 @@ var Layer = new Class({
     var buttons = new Element('div', {'class': 'buttons'});
       buttons.inject(this._container);
     
-    this._bring_forward_button = new Element('div', {'class': 'bring_forward_button', 'text': '^'});
+    this._bring_forward_button = new Element('div', {'class': 'button bring_forward_button', 'text': '^'});
       this._bring_forward_button.inject(buttons);
-    this._delete_button = new Element('div', {'class': 'delete_button', 'text': 'x'}); 
+    this._delete_button = new Element('div', {'class': 'button delete_button', 'text': 'x'}); 
       this._delete_button.inject(buttons);
-    this._send_backwards_button = new Element('div', {'class': 'send_backwards_button', 'text': 'v'});
+    this._send_backwards_button = new Element('div', {'class': 'button send_backwards_button', 'text': 'v'});
       this._send_backwards_button.inject(buttons);
     
     var name_element = new Element('span', {'class': 'name', 'text': this._layer_name});
