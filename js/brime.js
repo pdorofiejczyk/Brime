@@ -20,6 +20,8 @@ var Brime = new Class({
   
   _buttons: null,
   
+  _toolbox: null,
+  
   _body: null,
   
   initialize: function(options) {
@@ -32,6 +34,7 @@ var Brime = new Class({
     this._editor = new EditorModule(this.options.editor);
     this._layers = new LayersModule(this.options.layers);
     this._buttons = new ButtonsModule();
+    this._toolbox = new ToolBoxModule();
     
     this._layers.get_container().addEvent('DOMInjected', function() {
       if(this.options.img_url) {
@@ -40,8 +43,10 @@ var Brime = new Class({
     }.bind(this));
     
     this._buttons.get_container().DOMInject(this._body);
-    this._editor.get_container().DOMInject(this._body);
+    this._toolbox.get_container().DOMInject(this._body);
     this._layers.get_container().DOMInject(this._body);
+    this._editor.get_container().DOMInject(this._body);
+    
     
     this._init_events();
   },

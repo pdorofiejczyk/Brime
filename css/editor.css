@@ -92,3 +92,18 @@ canvas#editor {
   top: 0;
   left: 0;
 }
+
+#toolbox {
+  width: 100px;
+  height: 500px;
+  float: right;
+}
+
+#toolbox .tool {
+  width: 25px;
+  height: 25px;
+}
+
+#selection_tool {
+  background-color: red;
+}
