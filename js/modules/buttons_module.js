@@ -26,9 +26,8 @@ var ButtonsModule = new Class({
   _on_file_form_changed: function(e) {
     if(e.target.files.length > 0) {
   		var reader = new FileReader();
-
       reader.onloadend = function (e) {
-      console.log(e.target.result);
+      console.log(e);
 	      this.fireEvent('fileLoaded', e.target.result);
       }.bind(this);
       reader.readAsDataURL(e.target.files[0]);

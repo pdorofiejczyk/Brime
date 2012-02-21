@@ -26,6 +26,7 @@ var EditorModule = new Class({
   },
   
   _on_obj_modified: function(obj) {
+    console.log( obj.memo.target);
     this.fireEvent('objModified', obj.memo.target);
   },
   

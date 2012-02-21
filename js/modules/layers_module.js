@@ -13,12 +13,7 @@ var LayersModule = new Class({
   
   _layers_wrapper: null,
   
-  init: function() {
-    this._container.setStyles({
-      width: this.options.width + 50,
-      height: this.options.height + 50
-    });
-    
+  init: function() {   
     this._layers_wrapper = new Element('div', {'id': 'layers_wrapper'});
       this._layers_wrapper.inject(this._container);
   },
@@ -173,7 +168,7 @@ var Layer = new Class({
   
     this._container = new Element('div', {'class': 'layer'});
     
-    this._canvas_element = new Element('canvas', {'width': ((width > height) ? height : width), 'height': ((width > height) ? height : width)});
+    this._canvas_element = new Element('canvas', {'width': width, 'height': height});
       this._canvas_element.inject(this._container);
       
     var buttons = new Element('div', {'class': 'buttons'});

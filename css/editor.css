@@ -1,7 +1,9 @@
 #layers {
   position: relative;
   float: left;
-  overflow: scroll;
+  overflow: auto;
+  width: 150px;
+  height: 500px;
 }
 
 #layers #layers_wrapper {
