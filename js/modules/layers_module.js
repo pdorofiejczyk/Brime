@@ -57,6 +57,8 @@ var LayersModule = new Class({
       var size = this.options.width;
     }
     
+    console.log(wrapper_size, size);
+    
     if(wrapper_size > size) {
       this._container.addClass('oversize');
     }
