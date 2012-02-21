@@ -1,4 +1,4 @@
-var ToolAbstract = Class({
+var ToolAbstract = new Class({
   _context: null,
   
   _icon: null,

@@ -44,9 +44,8 @@ var Brime = new Class({
     
     this._buttons.get_container().DOMInject(this._body);
     this._toolbox.get_container().DOMInject(this._body);
-    this._layers.get_container().DOMInject(this._body);
     this._editor.get_container().DOMInject(this._body);
-    
+    this._layers.get_container().DOMInject(this._body);
     
     this._init_events();
   },

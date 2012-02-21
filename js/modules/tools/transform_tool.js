@@ -2,7 +2,7 @@
 * Fake tool, working as default fabric.Canvas
 */
 
-var SelectionTool = new Class({
+var TransformTool = new Class({
   Extends: ToolAbstract,
   
   _tool_name: 'selection_tool',

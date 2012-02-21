@@ -64,6 +64,7 @@
 
 canvas#editor {
   background: url('../img/checked.jpg') repeat;
+  float: left
 }
 
 .canvas-container {
@@ -96,7 +97,7 @@ canvas#editor {
 #toolbox {
   width: 100px;
   height: 500px;
-  float: right;
+  float: left;
 }
 
 #toolbox .tool {
@@ -104,6 +105,10 @@ canvas#editor {
   height: 25px;
 }
 
+#toolbox .tool.selected {
+  border: 1px solid blue;
+}
+
 #selection_tool {
-  background-color: red;
+  background: url(../img/icons/transform_tool.png) no-repeat 4px 4px;
 }

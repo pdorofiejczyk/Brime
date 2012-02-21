@@ -3,25 +3,29 @@ var ToolBoxModule = new Class({
   
   _module_name: 'toolbox',
   
-  _tools_constructors: [
-    SelectionTool
-  ],
+  _selected_tool: null,
   
-  _tools_instances: {},
+  /**
+   * Tools
+   */
+   
+  _transform_tool: null,
   
   init: function() {
-    for(var i = 0; i < this._tools_constructors.length; i++) {
-      var tool = new window[id]();
-      var tool_icon = tool.get_icon();
-        tool_icon.inject(this._container);
-        
-        tool_icon.addEvent('click', this._on_tool_click.bind(this, tool));
-        
-      this._tools[id] = tool;
-    }
+    this._transform_tool = new TransformTool();
+      this._transform_tool.get_icon().inject(this._container);
+      this._transform_tool.get_icon().addEvent('click', this._on_tool_click.bind(this, this._transform_tool));
   },
   
   _on_tool_click: function(tool) {
+    if(this._selected_tool != null) {
+      this._selected_tool.get_icon().removeClass('selected');
+    }
+    
+    tool.get_icon().addClass('selected');
+    this._selected_tool = tool;
+    
     this.fireEvent('toolSelected', tool);
   }
 });
+
