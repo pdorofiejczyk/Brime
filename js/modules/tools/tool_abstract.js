@@ -1,5 +1,4 @@
 var ToolAbstract = new Class({
-  _context: null,
   
   _icon: null,
   
@@ -9,9 +8,11 @@ var ToolAbstract = new Class({
     this._icon = new Element('div', {'id': this._tool_name, 'class': 'tool'});
   },
   
-  set_context: function(context) {
+  inject: function(context) {
     if(context instanceof fabric.Canvas) {
-      this._context = context;
+      context.setOnMouseUp(this._on_mouse_up.bind(context));
+      context.setOnMouseDown(this._on_mouse_down.bind(context));
+      context.setOnMouseMove(this._on_mouse_move.bind(context));
     }
     else {
       throw new Error('Context must be instance of fabric.Canvas');
@@ -22,7 +23,7 @@ var ToolAbstract = new Class({
     return this._icon;
   },
   
-  on_mouse_up: function() {
+  _on_mouse_up: function() {
     throw new Error('Method on_mouse_up is not implemented');
   },
   
@@ -30,7 +31,7 @@ var ToolAbstract = new Class({
     throw new Error('Method on_mouse_down is not implemented');
   },
   
-  on_mouse_move: function() {
+  _on_mouse_move: function() {
     throw new Error('Method on_mouse_move is not implemented');
   }
 });

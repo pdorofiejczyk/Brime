@@ -11,6 +11,20 @@ fabric.Object.prototype.fullScale = function(value) {
   this.setLeft(this.getLeft() * value);
 }
 
+fabric.Canvas.prototype.__onMouseDown = fabric.Canvas.prototype.__onMouseUp = fabric.Canvas.prototype.__onMouseMove = null;
+
+fabric.Canvas.prototype.setOnMouseDown = function(func) {
+  this.__onMouseDown = func;
+}
+
+fabric.Canvas.prototype.setOnMouseUp = function(func) {
+  this.__onMouseUp = func;
+}
+
+fabric.Canvas.prototype.setOnMouseMove = function(func) {
+  this.__onMouseMove = func;
+}
+
 var Brime = new Class({
   Implements: Options,
   
@@ -48,6 +62,8 @@ var Brime = new Class({
     this._layers.get_container().DOMInject(this._body);
     
     this._init_events();
+    
+    this._toolbox.select_default_tool();
   },
   
   _init_events: function() {
@@ -62,6 +78,8 @@ var Brime = new Class({
     this._layers.addEvent('delete', this._editor.on_delete.bind(this._editor));
     
     this._buttons.addEvent('fileLoaded', this.load_image.bind(this));
+    
+    this._toolbox.addEvent('toolSelected', this._editor.on_tool_selected.bind(this._editor));
   },
   
   load_image: function(url) {

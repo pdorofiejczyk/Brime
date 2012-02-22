@@ -5,6 +5,8 @@ var ToolBoxModule = new Class({
   
   _selected_tool: null,
   
+  DEFAULT_TOOL: '_transform_tool',
+  
   /**
    * Tools
    */
@@ -14,18 +16,26 @@ var ToolBoxModule = new Class({
   init: function() {
     this._transform_tool = new TransformTool();
       this._transform_tool.get_icon().inject(this._container);
-      this._transform_tool.get_icon().addEvent('click', this._on_tool_click.bind(this, this._transform_tool));
+      this._transform_tool.get_icon().addEvent('click', this._select_tool.bind(this, this._transform_tool));
   },
   
-  _on_tool_click: function(tool) {
-    if(this._selected_tool != null) {
-      this._selected_tool.get_icon().removeClass('selected');
+  select_default_tool: function() {
+    this._select_tool(this[this.DEFAULT_TOOL]);
+  },
+  
+  _select_tool: function(tool) {
+    if(tool != this._selected_tool) {
+    
+      if(this._selected_tool != null) {
+        this._selected_tool.get_icon().removeClass('selected');
+      }
+      
+      tool.get_icon().addClass('selected');
+      this._selected_tool = tool;
+      
+      this.fireEvent('toolSelected', tool);
+      console.log('select_tool');
     }
-    
-    tool.get_icon().addClass('selected');
-    this._selected_tool = tool;
-    
-    this.fireEvent('toolSelected', tool);
   }
 });
 

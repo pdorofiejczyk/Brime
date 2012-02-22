@@ -7,6 +7,8 @@ var EditorModule = new Class({
   
   _objects: null,
   
+  _tool: null,
+  
   init: function() {},
   
   _on_dom_injected: function() {
@@ -67,5 +69,16 @@ var EditorModule = new Class({
   
   on_delete: function(obj) {
     this._canvas.remove(obj);
+  },
+  
+  on_tool_selected: function(tool) {
+  console.log('on_tool_selected', tool);
+    if(tool instanceof ToolAbstract) {
+      this._tool = tool;
+      this._tool.inject(this._canvas);
+    }
+    else {
+      throw new Error('Tool must be instance of ToolAbstract');
+    }
   }
 });
