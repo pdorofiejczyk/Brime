@@ -25,6 +25,11 @@ fabric.Canvas.prototype.setOnMouseMove = function(func) {
   this.__onMouseMove = func;
 }
 
+fabric.Canvas.prototype.addAndFire = function() {
+  this.add(arguments);
+  this.fire('object:created', arguments);
+}
+
 var Brime = new Class({
   Implements: Options,
   

@@ -13,14 +13,27 @@ var ToolBoxModule = new Class({
    
   _transform_tool: null,
   
+  _rectangle_tool: null,
+  
   init: function() {
     this._transform_tool = new TransformTool();
-      this._transform_tool.get_icon().inject(this._container);
-      this._transform_tool.get_icon().addEvent('click', this._select_tool.bind(this, this._transform_tool));
+    this._rectangle_tool = new RectangleTool();
+    
+    this._set_up_tools(
+      this._transform_tool, 
+      this._rectangle_tool
+    );
   },
   
   select_default_tool: function() {
     this._select_tool(this[this.DEFAULT_TOOL]);
+  },
+  
+  _set_up_tools: function() {
+    for(var i = 0; i < arguments.length; i++) {
+      arguments[i].get_icon().inject(this._container);
+      arguments[i].get_icon().addEvent('click', this._select_tool.bind(this, arguments[i]));
+    }
   },
   
   _select_tool: function(tool) {

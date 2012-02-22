@@ -22,9 +22,10 @@ var EditorModule = new Class({
   },
   
   _init_observers: function() {
-    this._canvas.observe('object:modified', this._on_obj_modified.bind(this));
-    this._canvas.observe('object:selected', this._on_obj_selected.bind(this));
-    this._canvas.observe('selection:cleared', this._on_selection_cleared.bind(this));
+    //this._canvas.observe('object:modified', this._on_obj_modified.bind(this));
+    //this._canvas.observe('object:selected', this._on_obj_selected.bind(this));
+    //this._canvas.observe('selection:cleared', this._on_selection_cleared.bind(this));
+    this._canvas.observe('object:created', function(obj){console.log('created', obj)});
   },
   
   _on_obj_modified: function(obj) {

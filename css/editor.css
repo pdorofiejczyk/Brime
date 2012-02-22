@@ -112,3 +112,7 @@ canvas#editor {
 #selection_tool {
   background: url(../img/icons/transform_tool.png) no-repeat 4px 4px;
 }
+
+#rectangle_tool {
+  background: url(../img/icons/rectangle_tool.png) no-repeat 4px 4px;
+}
