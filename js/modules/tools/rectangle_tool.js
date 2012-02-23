@@ -16,8 +16,9 @@ var RectangleTool = new Class({
          fill: 'rgba(255,0,0,0.5)'
        });
          
-    this.addAndFire(rect);
+    this.add(rect);
     
+    this.deactivateAllWithDispatch();
     this.setActiveObject(rect, e);
     
     this.stateful && rect.saveState();

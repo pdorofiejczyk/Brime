@@ -22,19 +22,23 @@ var EditorModule = new Class({
   },
   
   _init_observers: function() {
-    //this._canvas.observe('object:modified', this._on_obj_modified.bind(this));
-    //this._canvas.observe('object:selected', this._on_obj_selected.bind(this));
-    //this._canvas.observe('selection:cleared', this._on_selection_cleared.bind(this));
-    this._canvas.observe('object:created', function(obj){console.log('created', obj)});
+    this._canvas.observe('object:modified', this._on_obj_modified.bind(this));
+    this._canvas.observe('object:selected', this._on_obj_selected.bind(this));
+    this._canvas.observe('selection:cleared', this._on_selection_cleared.bind(this));
+    this._canvas.observe('object:created', this._on_obj_created.bind(this));
   },
   
   _on_obj_modified: function(obj) {
-    console.log( obj.memo.target);
+    console.log('modified',obj.memo.target.toObject());
     this.fireEvent('objModified', obj.memo.target);
   },
   
   _on_obj_selected: function(obj) {
     this.fireEvent('objSelected', obj.memo.target);
+  },
+ 
+  _on_obj_created: function(obj) {
+    this.fireEvent('newObject', obj.memo);
   },
   
   _on_selection_cleared: function() {
@@ -42,10 +46,9 @@ var EditorModule = new Class({
   },
   
   on_obj: function(obj) {
+  console.log('add', obj);
     this._canvas.add(obj);
     this._canvas.renderAll();
-    
-    this.fireEvent('newObject', obj);
   },
   
   on_obj_selected: function(obj) {

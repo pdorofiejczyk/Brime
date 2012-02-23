@@ -65,15 +65,16 @@ var LayersModule = new Class({
   on_obj_modified: function(obj) {
     var small_object = Object.clone(obj);
       small_object.fullScale(this.options.scale);
-      
+       console.log('on_obj_modified', this._obj_to_layer[obj]);
     this._obj_to_layer[obj].update_obj(small_object);
   },
   
   on_obj_selected: function(obj) {
+  console.log('on_obj_selected', obj);
     if(this._selected_layer != null) {
       this._selected_layer.deselect();
     }
-    
+    console.log(this._obj_to_layer[obj]);
     this._selected_layer = this._obj_to_layer[obj];
     this._selected_layer.select();
   },
@@ -117,6 +118,7 @@ var LayersModule = new Class({
     layer.get_container().DOMInject(this._layers_wrapper, 'top');
     
     layer.addEvent('layerSelected', function(obj) {
+    console.log('layerSelected');
       if(this._selected_layer != null) {
         this._selected_layer.deselect();
       }
@@ -143,6 +145,7 @@ var LayersModule = new Class({
     }.bind(this, obj));
     
     this._layers.push(layer);
+    console.log(this._obj_to_layer);
   }
   
   
@@ -218,7 +221,8 @@ var Layer = new Class({
     this._object = obj;
     this._object.hasControls = false;
     this._object.hasBorders = false;
-    this._canvas.add(obj);
+    this._canvas.add(this._object);
+    this._canvas.renderAll();
   },
   
   get_container: function() {

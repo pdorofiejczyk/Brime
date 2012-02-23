@@ -6,9 +6,24 @@ Element.prototype.DOMInject = function(l, e) {
 }
 
 fabric.Object.prototype.fullScale = function(value) {
-  this.scale(value);
+  this.scaleX = this.scaleX * value;
+  this.scaleY = this.scaleY * value;
   this.setTop(this.getTop() * value);
   this.setLeft(this.getLeft() * value);
+}
+
+fabric.Object.prototype.uniqueId = null;
+
+fabric.Object.prototype.uniqueId = function() {
+  if(this.unique_id == null) {
+    this.unique_id = Math.floor(Math.random() * 1000);
+  }
+  
+  return this.unique_id;
+}
+
+fabric.Object.prototype.toString = function() {
+  return "#<fabric." + capitalize(this.type) + ": {id: \"" + this.uniqueId() + "\"}>";
 }
 
 fabric.Canvas.prototype.__onMouseDown = fabric.Canvas.prototype.__onMouseUp = fabric.Canvas.prototype.__onMouseMove = null;
@@ -25,9 +40,11 @@ fabric.Canvas.prototype.setOnMouseMove = function(func) {
   this.__onMouseMove = func;
 }
 
-fabric.Canvas.prototype.addAndFire = function() {
-  this.add(arguments);
-  this.fire('object:created', arguments);
+fabric.Canvas.prototype.add = function(obj) {
+console.log('add',obj);
+  var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
+  this.fire('object:created', obj);
+  return returned;
 }
 
 var Brime = new Class({
