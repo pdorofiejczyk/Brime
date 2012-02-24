@@ -116,3 +116,7 @@ canvas#editor {
 #rectangle_tool {
   background: url(../img/icons/rectangle_tool.png) no-repeat 4px 4px;
 }
+
+#brush_tool {
+  background: url(../img/icons/brush_tool.png) no-repeat 4px 4px;
+}

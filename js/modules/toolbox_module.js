@@ -15,13 +15,17 @@ var ToolBoxModule = new Class({
   
   _rectangle_tool: null,
   
+  _brush_tool: null,
+  
   init: function() {
     this._transform_tool = new TransformTool();
     this._rectangle_tool = new RectangleTool();
+    this._brush_tool = new BrushTool();
     
     this._set_up_tools(
       this._transform_tool, 
-      this._rectangle_tool
+      this._rectangle_tool,
+      this._brush_tool
     );
   },
   
@@ -40,10 +44,10 @@ var ToolBoxModule = new Class({
     if(tool != this._selected_tool) {
     
       if(this._selected_tool != null) {
-        this._selected_tool.get_icon().removeClass('selected');
+        this._selected_tool.deselect();
       }
       
-      tool.get_icon().addClass('selected');
+      tool.select();
       this._selected_tool = tool;
       
       this.fireEvent('toolSelected', tool);
