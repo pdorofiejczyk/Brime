@@ -52,6 +52,7 @@ var EditorModule = new Class({
   },
   
   on_obj_selected: function(obj) {
+  console.log('selectedd', obj);
     this._canvas.setActiveObject(obj);
   },
   

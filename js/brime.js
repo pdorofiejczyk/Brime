@@ -22,9 +22,13 @@ fabric.Object.prototype.uniqueId = function() {
   return this.unique_id;
 }
 
-fabric.Object.prototype.toString = function() {
+var objToString = function() {
   return "#<fabric." + capitalize(this.type) + ": {id: \"" + this.uniqueId() + "\"}>";
 }
+
+fabric.Object.prototype.toString = objToString;
+fabric.Group.prototype.toString = objToString;
+
 
 fabric.Canvas.prototype.__onMouseDown = fabric.Canvas.prototype.__onMouseUp = fabric.Canvas.prototype.__onMouseMove = null;
 
@@ -42,11 +46,87 @@ fabric.Canvas.prototype.setOnMouseMove = function(func) {
 
 fabric.Canvas.prototype.add = function(obj) {
 console.log('add',obj);
-  var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
-  this.fire('object:created', obj);
+  var group = null;
+  switch(true) {
+    case obj.isType('path'):
+      group = this.getActiveObject();
+      console.log('group', this);
+      if(group) {
+        group.add(obj);
+        return this;
+      }
+      else {
+        group = new fabric.Group([obj]);
+      }
+    break;
+    
+    default:
+      group = new fabric.Group([obj]);
+    break;
+  }
+  
+  var returned = fabric.StaticCanvas.prototype.add.bind(this)(group);
+  this.fire('object:created', group);
+  
   return returned;
 }
 
+fabric.Canvas.prototype._prepareForDrawing = function(e) {
+  this._isCurrentlyDrawing = true;
+
+  var pointer = this.getPointer(e);
+
+  this._freeDrawingXPoints.length = this._freeDrawingYPoints.length = 0;
+
+  this._freeDrawingXPoints.push(pointer.x);
+  this._freeDrawingYPoints.push(pointer.y);
+
+  this.contextTop.beginPath();
+  this.contextTop.moveTo(pointer.x, pointer.y);
+  this.contextTop.strokeStyle = this.freeDrawingColor;
+  this.contextTop.lineWidth = this.freeDrawingLineWidth;
+  this.contextTop.lineCap = this.contextTop.lineJoin = 'round';
+}
+/*
+fabric.Group.prototype.add = function(object) {
+       this.objects.push(object);
+       object.setActive(true);
+       this._calcBounds();
+       this._updateObjectsCoords();
+       return this;
+     }
+
+fabric.Group.prototype._calcBounds = function() {
+
+  min = fabric.util.array.min;
+  max = fabric.util.array.max;
+  var aX = [], 
+  aY = [], 
+  minX, minY, maxX, maxY, o, width, height, 
+  i = 0,
+  len = this.objects.length;
+
+  for (; i < len; ++i) {
+    o = this.objects[i];
+    o.setCoords();
+    for (var prop in o.oCoords) {
+      aX.push(o.oCoords[prop].x);
+      aY.push(o.oCoords[prop].y);
+    }
+  };
+
+  minX = min(aX);
+  maxX = max(aX);
+  minY = min(aY);
+  maxY = max(aY);
+         
+  width = (maxX - minX) || 0;
+  height = (maxY - minY) || 0;
+    
+  this.width = width;
+  this.height = height;
+}
+*/
 var Brime = new Class({
   Implements: Options,
   
