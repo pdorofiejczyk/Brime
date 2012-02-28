@@ -18,7 +18,7 @@ var TransformTool = new Class({
       // ignore if some object is being transformed at this moment
       if (this._currentTransform) return;
 
-      var target = this.getActiveObject();
+      var target = this.getActiveObject() || this.getActiveGroup();
       
       if(target !== null && target != undefined) {
         var pointer = this.getPointer(e),

@@ -63,19 +63,23 @@ var LayersModule = new Class({
   },
   
   on_obj_modified: function(obj) {
-    var small_object = Object.clone(obj);
-      small_object.fullScale(this.options.scale);
-       console.log('on_obj_modified', this._obj_to_layer[obj]);
-    this._obj_to_layer[obj].update_obj(small_object);
+  console.log('on_obj_modified', obj);
+   for(var i = 0; i < obj.objects.length; i++) {
+      var small_object = Object.clone(obj.objects[i]);
+        small_object.fullScale(this.options.scale);
+         console.log('on_obj_modifiedddd', obj.objects[i]);
+      this._obj_to_layer[obj.objects[i]].update_obj(small_object);
+    }
   },
   
   on_obj_selected: function(obj) {
+  var obj = obj.objects || obj;
   console.log('on_obj_selected', obj);
     if(this._selected_layer != null) {
       this._selected_layer.deselect();
     }
-    console.log(this._obj_to_layer[obj]);
-    this._selected_layer = this._obj_to_layer[obj];
+    console.log(obj);
+    this._selected_layer = this._obj_to_layer[obj[0] ? obj[0] : obj];
     this._selected_layer.select();
   },
   

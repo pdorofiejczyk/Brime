@@ -45,7 +45,7 @@ fabric.Canvas.prototype.setOnMouseMove = function(func) {
 }
 
 fabric.Canvas.prototype.add = function(obj) {
-console.log('add',obj);
+/*console.log('add',obj);
   var group = null;
   switch(true) {
     case obj.isType('path'):
@@ -63,14 +63,57 @@ console.log('add',obj);
     default:
       group = new fabric.Group([obj]);
     break;
-  }
+  }*/
   
-  var returned = fabric.StaticCanvas.prototype.add.bind(this)(group);
-  this.fire('object:created', group);
+  var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
+  this.fire('object:created', obj);
   
   return returned;
 }
+/*
+fabric.Canvas.prototype.drawBorders = function(ctx) {
+      if (!this.hasBorders) return;
+console.log('draw borders');
+      var padding = this.padding,
+          padding2 = padding * 2;
 
+      ctx.save();
+
+      ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
+      ctx.strokeStyle = this.borderColor;
+
+      var scaleX = 1 / (this.scaleX < this.MIN_SCALE_LIMIT ? this.MIN_SCALE_LIMIT : this.scaleX),
+          scaleY = 1 / (this.scaleY < this.MIN_SCALE_LIMIT ? this.MIN_SCALE_LIMIT : this.scaleY);
+
+      ctx.lineWidth = 1 / this.borderScaleFactor;
+
+      ctx.scale(scaleX, scaleY);
+
+      var w = this.getWidth(),
+          h = this.getHeight();
+
+      ctx.strokeRect(
+        ~~((w / 2) - padding) + 0.5, // offset needed to make lines look sharper
+        ~~((h / 2) - padding) + 0.5,
+        ~~(-w - padding2),
+        ~~(-h - padding2)
+      );
+
+      ctx.restore();
+      return this;
+    }
+
+fabric.Image.prototype._render = function(ctx) {
+      var originalImgSize = this.getOriginalSize();
+      ctx.drawImage(
+        this.getElement(),
+       originalImgSize.width / 2,
+       originalImgSize.height / 2,
+        originalImgSize.width,
+        originalImgSize.height
+      );
+    }
+*/
 fabric.Canvas.prototype._prepareForDrawing = function(e) {
   this._isCurrentlyDrawing = true;
 
@@ -95,6 +138,8 @@ fabric.Group.prototype.add = function(object) {
        this._updateObjectsCoords();
        return this;
      }
+     
+fabric.Group.prototype._updateObjectsCoords = function() {}
 
 fabric.Group.prototype._calcBounds = function() {
 

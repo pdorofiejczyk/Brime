@@ -28,13 +28,23 @@ var EditorModule = new Class({
     this._canvas.observe('object:created', this._on_obj_created.bind(this));
   },
   
+  _notify_all: function(event_name, obj) {
+    if(obj.isType('group')) {
+      this.fireEvent(event_name, {objects: obj.getObjects()});
+    }
+    else {
+      this.fireEvent(event_name, {objects: [obj]});
+    }
+  },
+  
   _on_obj_modified: function(obj) {
-    console.log('modified',obj.memo.target.toObject());
-    this.fireEvent('objModified', obj.memo.target);
+  console.log('_on_obj_modified', obj);
+    obj.memo.target.destroy();
+    this._notify_all('objModified', obj.memo.target);
   },
   
   _on_obj_selected: function(obj) {
-    this.fireEvent('objSelected', obj.memo.target);
+     this._notify_all('objSelected', obj.memo.target);
   },
  
   _on_obj_created: function(obj) {
@@ -52,8 +62,12 @@ var EditorModule = new Class({
   },
   
   on_obj_selected: function(obj) {
-  console.log('selectedd', obj);
-    this._canvas.setActiveObject(obj);
+    if(obj.isType('group')) {
+      this._canvas.setActiveGroup(obj);
+    }
+    else {
+      this._canvas.setActiveObject(obj);
+    }
   },
   
   on_obj_bring_forward: function(obj) {
