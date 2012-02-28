@@ -64,11 +64,13 @@ var LayersModule = new Class({
   
   on_obj_modified: function(obj) {
   console.log('on_obj_modified', obj);
-   for(var i = 0; i < obj.objects.length; i++) {
-      var small_object = Object.clone(obj.objects[i]);
+  var objects = obj.getObjects();
+   for(var i = 0; i < objects.length; i++) {
+      var small_object = Object.clone(objects[i]);
+        obj._restoreObjectState(small_object);
         small_object.fullScale(this.options.scale);
-         console.log('on_obj_modifiedddd', obj.objects[i]);
-      this._obj_to_layer[obj.objects[i]].update_obj(small_object);
+         console.log('on_obj_modifiedddd', objects[i]);
+      this._obj_to_layer[objects[i]].update_obj(small_object);
     }
   },
   

@@ -39,8 +39,7 @@ var EditorModule = new Class({
   
   _on_obj_modified: function(obj) {
   console.log('_on_obj_modified', obj);
-    obj.memo.target.destroy();
-    this._notify_all('objModified', obj.memo.target);
+    this.fireEvent('objModified', obj.memo.target);
   },
   
   _on_obj_selected: function(obj) {
