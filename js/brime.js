@@ -214,7 +214,7 @@ var Brime = new Class({
   },
   
   _init_events: function() {
-    this._editor.addEvent('newObject', this._layers.on_new_layer.bind(this._layers));
+    this._editor.addEvent('newObject', this._layers.on_new_obj.bind(this._layers));
     this._editor.addEvent('objModified', this._layers.on_obj_modified.bind(this._layers));
     this._editor.addEvent('objSelected', this._layers.on_obj_selected.bind(this._layers));
     this._editor.addEvent('selectionCleared', this._layers.on_selection_cleared.bind(this._layers));

@@ -66,11 +66,7 @@ var LayersModule = new Class({
   console.log('on_obj_modified', obj);
   var objects = obj.getObjects();
    for(var i = 0; i < objects.length; i++) {
-      var small_object = Object.clone(objects[i]);
-        obj._restoreObjectState(small_object);
-        small_object.fullScale(this.options.scale);
-         console.log('on_obj_modifiedddd', objects[i]);
-      this._obj_to_layer[objects[i]].update_obj(small_object);
+      this._obj_to_layer[objects[i]].update_obj(obj);
     }
   },
   
@@ -107,14 +103,20 @@ var LayersModule = new Class({
     }
   },
   
-  on_new_layer: function(obj) {
+  on_new_obj: function(obj) {
+    if(obj.isType('path')) {
+      this._obj_to_layer[obj] = this._selected_layer;
+      this._selected_layer.add(obj);
+    }
+    else {
+      this._new_layer(obj); 
+    }
+  },
+  
+  _new_layer: function(obj) {
     var new_id = this._layers.length;
     
-    var small_object = Object.clone(obj);
-      small_object.fullScale(this.options.scale);
-      console.log(this.options.scale, small_object);
-    
-    var layer = new Layer(small_object, 'Warstwa '+new_id, this.options.width, this.options.height);
+    var layer = new Layer(obj, 'Warstwa '+new_id, this.options.width, this.options.height, this.options.scale);
     
     this._obj_to_layer[obj] = layer;
     this._layer_to_obj[layer] = obj;
@@ -123,14 +125,14 @@ var LayersModule = new Class({
     
     layer.get_container().DOMInject(this._layers_wrapper, 'top');
     
-    layer.addEvent('layerSelected', function(obj) {
+    layer.addEvent('layerSelected', function(group) {
     console.log('layerSelected');
       if(this._selected_layer != null) {
         this._selected_layer.deselect();
       }
       
-      this.fireEvent('layerSelected', obj);
-    }.bind(this, obj));
+      this.fireEvent('layerSelected', group);
+    }.bind(this));
     
     layer.addEvent('bringForward', function(obj) {
       if(this._step_move_layer(obj, 'forward')) {
@@ -166,17 +168,19 @@ var Layer = new Class({
   
   _canvas: null,
   
-  _object: null,
-  
   _layer_name: '',
   
-  initialize: function(object, layer_name, width, height) {
-    this._object = object;
-    this._object.hasControls = false;
-    this._object.hasBorders = false;
-    
-    this._layer_name = layer_name;
+  _big_to_small: {},
   
+  _objects: {},
+  
+  _scale_factor: 1,
+  
+  initialize: function(object, layer_name, width, height, scale) {
+    
+    this._scale_factor = scale;
+    this._layer_name = layer_name;
+    
     this._container = new Element('div', {'class': 'layer'});
     
     this._canvas_element = new Element('canvas', {'width': width, 'height': height});
@@ -195,18 +199,26 @@ var Layer = new Class({
     var name_element = new Element('span', {'class': 'name', 'text': this._layer_name});
       name_element.inject(this._container);
       
-    this._container.addEvent('DOMInjected', function(){
+    this._container.addEvent('DOMInjected', function(object){
       this._canvas = new fabric.StaticCanvas(this._canvas_element);
-      this._canvas.add(this._object);
-    }.bind(this));
+      this.add(object);
+    }.bind(this, object));
     
     this._init_events();
+  },
+  
+  _scale: function(obj) {
+    var small_object = Object.clone(obj);
+    if(obj.isType('group')) obj._restoreObjectState(small_object);
+    small_object.fullScale(this._scale_factor);
+    
+    return small_object;
   },
   
   _init_events: function() {
     this._canvas_element.addEvent('click', function() {
       this.select();
-      this.fireEvent('layerSelected');
+      this.fireEvent('layerSelected', new fabric.Group(this._get_objects()));
     }.bind(this));
     
     this._bring_forward_button.addEvent('click', function() {
@@ -222,12 +234,27 @@ var Layer = new Class({
     }.bind(this));
   },
   
-  update_obj: function(obj) {
-    this._canvas.remove(this._object);
-    this._object = obj;
-    this._object.hasControls = false;
-    this._object.hasBorders = false;
-    this._canvas.add(this._object);
+  update_obj: function(object) {
+    var i = this._canvas.getObjects().indexOf(this._big_to_small[object]);
+    this._canvas.remove(this._big_to_small[object]);
+    
+    var obj = this._scale(object);
+    this._big_to_small[object] = obj;
+    this._objects[object]= object;
+    
+    obj.hasControls = false;
+    obj.hasBorders = false;
+    this._canvas.insertAt(obj, i);
+    this._canvas.renderAll();
+  },
+  
+  add: function(object) {
+    var obj = this._scale(object);
+    obj.hasControls = false;
+    obj.hasBorders = false;
+    this._canvas.add(obj);
+    this._big_to_small[object] = obj;
+    this._objects[object]= object;
     this._canvas.renderAll();
   },
   
@@ -245,5 +272,14 @@ var Layer = new Class({
   
   get_name: function() {
     return this._layer_name;
+  },
+  
+  _get_objects: function() {
+    var objects = [];
+    for(id in this._objects) {
+      objects.push(this._objects[id]);
+    }
+    
+    return objects;
   }
 });
