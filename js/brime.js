@@ -130,6 +130,10 @@ fabric.Canvas.prototype._prepareForDrawing = function(e) {
   this.contextTop.lineWidth = this.freeDrawingLineWidth;
   this.contextTop.lineCap = this.contextTop.lineJoin = 'round';
 }
+
+fabric.Canvas.prototype.setActiveObjects = function(objects) {
+  this.setActiveGroup(new fabric.Group(objects));
+}
 /*
 fabric.Group.prototype.add = function(object) {
        this.objects.push(object);
@@ -184,6 +188,8 @@ var Brime = new Class({
   _toolbox: null,
   
   _body: null,
+  
+  _img: null,
   
   initialize: function(options) {
     this.setOptions(options);

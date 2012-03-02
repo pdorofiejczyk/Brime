@@ -61,6 +61,8 @@ var EditorModule = new Class({
   },
   
   on_obj_selected: function(obj) {
+  console.log('on_obj_selected', obj);
+    this._canvas.deactivateAll();
     if(obj.isType('group')) {
       this._canvas.setActiveGroup(obj);
     }

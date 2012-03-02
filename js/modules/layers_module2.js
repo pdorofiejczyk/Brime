@@ -13,13 +13,16 @@ var LayersModule = new Class({
   
   _layers_wrapper: null,
   
+  _selected_layer: null,
+  
   init: function() {   
     this._layers_wrapper = new Element('div', {'id': 'layers_wrapper'});
       this._layers_wrapper.inject(this._container);
   },
   
   _is_flat_type: function(obj) {
-    for(var i; i < this._flat_types.length; i++) {
+    for(var i = 0; i < this._flat_types.length; i++) {
+    console.log('_is_flat_type');
       if(obj.isType(this._flat_types[i])) return true; 
     }
     
@@ -27,22 +30,52 @@ var LayersModule = new Class({
   },
   
   _new_layer: function(obj) {
-     
+    
     var layer = new Layer(this.options.width, this.options.height, this.options.scale);
-      layer.get_container().addEvent('DOMInjected', function() {console.log('dom injected');this.add(obj)}.bind(layer, obj));
+      layer.get_container().addEvent('DOMInjected', layer.add.bind(layer, obj));
       
-    this._obj_to_layer[obj] = layer;
+    this._obj_to_layer[layer._group] = layer;
     this._layers.push(layer);
    
     layer.get_container().DOMInject(this._layers_wrapper, 'top');
+    
+   layer.addEvent('layerSelected', function(layer) {
+    console.log('layerSelected');
+      if(this._selected_layer != null) {
+        this._selected_layer.deselect();
+      }
+      this._selected_layer = layer;
+      layer.select();
+      this.fireEvent('layerSelected', layer._group);
+    }.bind(this, layer));
+    
+    layer.addEvent('bringForward', function(layer) {
+      if(this._step_move_layer(obj, 'forward')) {
+        this.fireEvent('bringForward', layer._group);
+      }
+    }.bind(this, layer));
+    
+    layer.addEvent('sendBackwards', function(layer) {
+      if(this._step_move_layer(obj, 'backward')) {
+        this.fireEvent('sendBackwards', layer._group);
+      }
+    }.bind(this, layer));
+
+    layer.addEvent('delete', function(layer) {
+      if(this.delete_layer(obj)) {
+        this.fireEvent('delete', layer._group);
+      }
+    }.bind(this, layer));
   },
   
-  _add_to_selected_layer: function() {
+  _add_to_selected_layer: function(obj) {
+    this._selected_layer.add(obj);
+    this.fireEvent('layerSelected', this._selected_layer._group);
   },
   
   on_new_obj: function(obj) {
     console.log('on_new_obj', obj);
-    if(this._is_flat_type(obj)) {
+    if(this._is_flat_type(obj) && this._selected_layer !== null) {
     console.log('flat type');
       this._add_to_selected_layer(obj);
     }
@@ -54,6 +87,7 @@ var LayersModule = new Class({
   
   on_obj_modified: function(obj) {
     console.log('on_obj_modified', obj);
+    this._obj_to_layer[obj].update_obj(obj);
   },
   
   on_obj_selected: function(obj) {
@@ -106,8 +140,9 @@ var Layer = new Class({
     this._init_events();
   },
   
-  _scale: function(obj) {
+  _scale: function(obj, restore) {
     var small_object = Object.clone(obj);
+      if(restore) this._group._restoreObjectState(small_object);
       small_object.fullScale(this._scale_factor);
     
     return small_object;
@@ -133,14 +168,17 @@ var Layer = new Class({
   },
   
   update_obj: function(object) {
+  console.log('update_obj');
     this._canvas.clear();
     
-    if(object.isType('group')) {  
+    if(object.isType('group')) { 
+    console.log('is group'); 
       this._group = object;
       var objects = this._group.getObjects();
       
       for(var i = 0; i < objects.length; i++) {
-        this._add(objects[i]);
+        var obj = this._scale(objects[i], true);
+        this._add(obj);
       }
     }
     else {
@@ -151,8 +189,8 @@ var Layer = new Class({
     this._canvas.renderAll();
   },
   
-  _add: function(object) {
-    var obj = this._scale(object);
+  _add: function(obj) {
+  console.log('Layer._add ', obj);
     obj.hasControls = false;
     obj.hasBorders = false;
     this._canvas.add(obj);
@@ -161,7 +199,7 @@ var Layer = new Class({
   add: function(object) {
     console.log('Layer.add ', object);
     this._group.add(object);
-    this._add(object);
+    this._add(this._scale(object));
   },
   
   get_container: function() {
