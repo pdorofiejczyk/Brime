@@ -21,6 +21,7 @@ var LayersModule = new Class({
   },
   
   _is_flat_type: function(obj) {
+  return false;
     for(var i = 0; i < this._flat_types.length; i++) {
     console.log('_is_flat_type');
       if(obj.isType(this._flat_types[i])) return true; 

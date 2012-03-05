@@ -64,10 +64,10 @@ var LayersModule = new Class({
   
   on_obj_modified: function(obj) {
   console.log('on_obj_modified', obj);
-  var objects = obj.getObjects();
-   for(var i = 0; i < objects.length; i++) {
-      this._obj_to_layer[objects[i]].update_obj(obj);
-    }
+ // var objects = obj.getObjects();
+   //for(var i = 0; i < objects.length; i++) {
+      this._obj_to_layer[obj].update_obj(obj);
+   // }
   },
   
   on_obj_selected: function(obj) {
@@ -76,7 +76,7 @@ var LayersModule = new Class({
     if(this._selected_layer != null) {
       this._selected_layer.deselect();
     }
-    console.log(obj);
+    console.log(obj.toString());
     this._selected_layer = this._obj_to_layer[obj[0] ? obj[0] : obj];
     this._selected_layer.select();
   },
@@ -104,13 +104,15 @@ var LayersModule = new Class({
   },
   
   on_new_obj: function(obj) {
+  /*
     if(obj.isType('path')) {
       this._obj_to_layer[obj] = this._selected_layer;
       this._selected_layer.add(obj);
     }
-    else {
+    else {*/
+    console.log(obj.uniqueId());
       this._new_layer(obj); 
-    }
+    //}
   },
   
   _new_layer: function(obj) {
@@ -218,7 +220,7 @@ var Layer = new Class({
   _init_events: function() {
     this._canvas_element.addEvent('click', function() {
       this.select();
-      this.fireEvent('layerSelected', new fabric.Group(this._get_objects()));
+      this.fireEvent('layerSelected', this._get_objects()[0]);
     }.bind(this));
     
     this._bring_forward_button.addEvent('click', function() {

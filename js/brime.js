@@ -12,7 +12,7 @@ fabric.Object.prototype.fullScale = function(value) {
   this.setLeft(this.getLeft() * value);
 }
 
-fabric.Object.prototype.uniqueId = null;
+fabric.Object.prototype.unique_id = null;
 
 fabric.Object.prototype.uniqueId = function() {
   if(this.unique_id == null) {
@@ -28,6 +28,7 @@ var objToString = function() {
 
 fabric.Object.prototype.toString = objToString;
 fabric.Group.prototype.toString = objToString;
+fabric.Path.prototype.toString = objToString;
 
 
 fabric.Canvas.prototype.__onMouseDown = fabric.Canvas.prototype.__onMouseUp = fabric.Canvas.prototype.__onMouseMove = null;
@@ -176,6 +177,124 @@ fabric.Group.prototype._calcBounds = function() {
   this.height = height;
 }
 */
+
+fabric.Canvas.prototype._finalizeDrawingPath = function() {
+
+  this.contextTop.closePath();
+
+  this._isCurrentlyDrawing = false;
+
+  var minX = fabric.util.array.min(this._freeDrawingXPoints),
+      minY = fabric.util.array.min(this._freeDrawingYPoints),
+      maxX = fabric.util.array.max(this._freeDrawingXPoints),
+      maxY = fabric.util.array.max(this._freeDrawingYPoints),
+      ctx = this.contextTop,
+      path = [ ],
+      xPoint,
+      yPoint,
+      xPoints = this._freeDrawingXPoints,
+      yPoints = this._freeDrawingYPoints;
+
+  path.push('M ', xPoints[0] - minX, ' ', yPoints[0] - minY, ' ');
+
+  for (var i = 1; xPoint = xPoints[i], yPoint = yPoints[i]; i++) {
+    path.push('L ', xPoint - minX, ' ', yPoint - minY, ' ');
+  }
+
+
+  
+  // TODO (kangax): maybe remove Path creation from here, to decouple fabric.Canvas from fabric.Path,
+  // and instead fire something like "drawing:completed" event with path string
+
+  path = path.join('');
+
+  if (path === "M 0 0 L 0 0 ") {
+    // do not create 0 width/height paths, as they are rendered inconsistently across browsers
+    // Firefox 4, for example, renders a dot, whereas Chrome 10 renders nothing
+    return;
+  }
+   var activeObject = this.getActiveObject();
+console.log('activeObject', activeObject);
+  if(undefined !== activeObject && activeObject.isType('path') && activeObject.stroke == this.freeDrawingColor && activeObject.strokeWidth == this.freeDrawingLineWidth) {
+  console.log('bf addToPath');
+  var p = new fabric.Path(path);
+    activeObject.addToPath(p.path);
+    this.renderAll();
+    this.fire('object:modified', {target: activeObject});
+  }
+  else { 
+console.log(path);
+    var p = new fabric.Path(path);
+
+    p.fill = null;
+    p.stroke = this.freeDrawingColor;
+    p.strokeWidth = this.freeDrawingLineWidth;
+    this.add(p);
+    p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
+    this.renderAll();
+    this.fire('path:created', { path: p });
+  }
+}
+
+fabric.Path.prototype._parsePath = function(path) {
+  var commandLengths = {
+    m: 2,
+    l: 2,
+    h: 1,
+    v: 1,
+    c: 6,
+    s: 4,
+    q: 4,
+    t: 2,
+    a: 7
+  };
+  if(!path) {
+    path = this.path;
+  }
+  console.log(path);
+  var result = [ ],
+      currentPath,
+      chunks,
+      parsed;
+
+  for (var i = 0, j, chunksParsed, len = path.length; i < len; i++) {
+    currentPath = path[i];
+    chunks = currentPath.slice(1).trim().replace(/(\d)-/g, '$1###-').split(/\s|,|###/);
+    chunksParsed = [ currentPath.charAt(0) ];
+
+    for (var j = 0, jlen = chunks.length; j < jlen; j++) {
+      parsed = parseFloat(chunks[j]);
+      if (!isNaN(parsed)) {
+        chunksParsed.push(parsed);
+      }
+    }
+
+    var command = chunksParsed[0].toLowerCase(),
+        commandLength = commandLengths[command];
+        
+    if (chunksParsed.length - 1 > commandLength) {
+      for (var k = 1, klen = chunksParsed.length; k < klen; k += commandLength) {
+        result.push([command].concat(chunksParsed.slice(k, k + commandLength)));
+      }
+    }
+    else {
+      result.push(chunksParsed);
+    }
+  }
+console.log(result);
+  return result;
+}
+
+fabric.Path.prototype.addToPath = function(path) {
+  if (!path) {
+   throw Error('`path` argument is required');
+  }
+
+//console.log('addToPath', this._parsePath(path));
+  this.path = this.path.concat(path);
+  this._parseDimensions();
+}
+
 var Brime = new Class({
   Implements: Options,
   
