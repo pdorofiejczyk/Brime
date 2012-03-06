@@ -125,7 +125,12 @@ var LayersModule = new Class({
     
     layer.get_container().addEvent('DOMInjected', this._oversize_check.bind(this));
     
-    layer.get_container().DOMInject(this._layers_wrapper, 'top');
+    if(this._selected_layer != null) {
+      layer.get_container().DOMInject(this._selected_layer.get_container(), 'before');
+    }
+    else {
+      layer.get_container().DOMInject(this._layers_wrapper, 'top');
+    }
     
     layer.addEvent('layerSelected', function(group) {
     console.log('layerSelected');
@@ -154,8 +159,17 @@ var LayersModule = new Class({
       }
     }.bind(this, obj));
     
-    this._layers.push(layer);
-    console.log(this._obj_to_layer);
+    if(this._selected_layer != null) {
+      var i = this._layers.indexOf(this._selected_layer);
+      console.log('sel layer index', i);
+      this._layers.splice(i+1, 0, layer);
+    }
+    else {
+      this._layers.push(layer);
+    }
+    
+    console.log('layers', this._layers);
+    this.on_obj_selected(obj);
   }
   
   

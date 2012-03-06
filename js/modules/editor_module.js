@@ -73,6 +73,7 @@ var EditorModule = new Class({
   
   on_obj_bring_forward: function(obj) {
     var id = this._objects.indexOf(obj);
+    console.log('objects', this._objects);
     if(this._objects[id+1] != undefined) {
       this._canvas.remove(obj);
       this._canvas.insertAt(obj, id+1, false);

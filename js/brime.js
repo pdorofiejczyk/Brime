@@ -65,9 +65,15 @@ fabric.Canvas.prototype.add = function(obj) {
       group = new fabric.Group([obj]);
     break;
   }*/
-  
-  var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
+  var activeObject = this.getActiveObject();
+  if(activeObject != null) {
+    var returned = this.insertAt(obj, this._objects.indexOf(activeObject)+1);
+  }
+  else {
+    var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
+  }
   this.fire('object:created', obj);
+  this.setActiveObject(obj);
   
   return returned;
 }
@@ -215,17 +221,19 @@ fabric.Canvas.prototype._finalizeDrawingPath = function() {
   }
    var activeObject = this.getActiveObject();
 console.log('activeObject', activeObject);
-  if(undefined !== activeObject && activeObject.isType('path') && activeObject.stroke == this.freeDrawingColor && activeObject.strokeWidth == this.freeDrawingLineWidth) {
+  if(undefined !== activeObject && null !== activeObject && activeObject.isType('path') && activeObject.stroke == this.freeDrawingColor && activeObject.strokeWidth == this.freeDrawingLineWidth) {
   console.log('bf addToPath');
   var p = new fabric.Path(path);
-    activeObject.addToPath(p.path);
+  p.hasControls = false;
+  p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
+    activeObject.addToPath(p);
     this.renderAll();
     this.fire('object:modified', {target: activeObject});
   }
   else { 
 console.log(path);
     var p = new fabric.Path(path);
-
+    p.hasControls = false;
     p.fill = null;
     p.stroke = this.freeDrawingColor;
     p.strokeWidth = this.freeDrawingLineWidth;
@@ -289,9 +297,18 @@ fabric.Path.prototype.addToPath = function(path) {
   if (!path) {
    throw Error('`path` argument is required');
   }
+  console.log('top', this.oCoords.tl.x, path.oCoords.tl.x);
+  var p = path.path;
+var dt = path.oCoords.tl.x - this.oCoords.tl.x;
+var dl = path.oCoords.tl.y - this.oCoords.tl.y;
+console.log('dt ', dt, 'dl ', dl);
 
-//console.log('addToPath', this._parsePath(path));
-  this.path = this.path.concat(path);
+for(var i = 0; i < p.length; i++) {
+  p[i][1]+=dt;
+  p[i][2]+=dl;
+}
+console.log(p);
+  this.path = this.path.concat(p);
   this._parseDimensions();
 }
 
