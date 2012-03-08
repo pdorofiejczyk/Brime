@@ -55,14 +55,52 @@
     },
     
     add: function(object) {
+      this._restoreObjectsState();
       this.objects.push(object);
       this._modifyBounds(object);
-      this._updateObjectCoords(object, this.left, this.top);
+      this._updateObjectsCoords();
+    },
+    
+    
+     _restoreObjectState: function(object) {
+        
+        var groupLeft = this.get('left'),
+            groupTop = this.get('top'),
+            groupAngle = this.getAngle() * (Math.PI / 180),
+            objectLeft = object.get('originalLeft'),
+            objectTop = object.get('originalTop'),
+            rotatedTop = Math.cos(groupAngle) * object.get('top') + Math.sin(groupAngle) * object.get('left'),
+            rotatedLeft = -Math.sin(groupAngle) * object.get('top') + Math.cos(groupAngle) * object.get('left');
+        
+        object.setAngle(object.getAngle() + this.getAngle());
+        
+        object.set('left', groupLeft + rotatedLeft * this.get('scaleX'));
+        object.set('top', groupTop + rotatedTop * this.get('scaleY'));
+        
+        object.set('scaleX', object.get('scaleX') * this.get('scaleX'));
+        object.set('scaleY', object.get('scaleY') * this.get('scaleY'));
+        
+        object.setCoords();
+        object.hideCorners = false;
+        object.setActive(false);
+        object.setCoords();
+        
+        return this;
+     },
+      
+    _restoreObjectsState: function() {
+      for(var i = 0, l = this.objects.length; i < l; i++) {
+        this._restoreObjectState(this.objects[i]);
+      };
+      return this;
     },
     
     _updateObjectCoords: function(object, dx, dy) {
         var objectLeft = object.get('left'),
             objectTop = object.get('top');
+        
+        object.set('originalLeft', objectLeft);
+        object.set('originalTop', objectTop);
         
         object.set('left', objectLeft - dx);
         object.set('top', objectTop - dy);
@@ -92,6 +130,7 @@
       var objects = [this, object];
       for(var i = 0, l = objects.length; i < l; i++) {
         o = objects[i];
+        console.log('modifyBounds',i, o.oCoords);
         for (var prop in o.oCoords) {
           aX.push(o.oCoords[prop].x);
           aY.push(o.oCoords[prop].y);
@@ -103,11 +142,17 @@
       minY = min(aY);
       maxY = max(aY);
       
+      console.log(aX, aY);
+      
       width = (maxX - minX) || 0;
       height = (maxY - minY) || 0;
       
       this.width = width;
       this.height = height;
+      
+            
+      this.left = (minX + width / 2) || 0;
+      this.top = (minY + height / 2) || 0;
 
     },
     
