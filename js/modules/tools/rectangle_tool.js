@@ -14,16 +14,17 @@ var RectangleTool = new Class({
          top: pointer.y - RECTANGLE_DEFAULT_HEIGHT / 2,
          left: pointer.x - RECTANGLE_DEFAULT_WIDTH / 2,
          fill: 'rgba(255,0,0,0.5)'
-       });
+       })
+       obj = new fabric.MultiObject([rect]);
          
-    this.add(rect);
+    this.add(obj);
     
     this.deactivateAllWithDispatch();
-    this.setActiveObject(rect, e);
+    this.setActiveObject(obj, e);
     
-    this.stateful && rect.saveState();
-    this.onBeforeScaleRotate(rect);
-    this._setupCurrentTransform(e, rect);
+    this.stateful && obj.saveState();
+    this.onBeforeScaleRotate(obj);
+    this._setupCurrentTransform(e, obj);
   },
   
   _on_mouse_up: fabric.Canvas.prototype.__onMouseUp,
