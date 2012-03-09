@@ -23,7 +23,6 @@ fabric.Object.prototype.toString = objToString;
 fabric.Group.prototype.toString = objToString;
 fabric.Path.prototype.toString = objToString;
 
-
 //fabric.Canvas.prototype.__onMouseDown = fabric.Canvas.prototype.__onMouseUp = fabric.Canvas.prototype.__onMouseMove = null;
 
 fabric.Canvas.prototype.setOnMouseDown = function(func) {
@@ -122,6 +121,9 @@ fabric.Image.prototype._render = function(ctx) {
       );
     }
 */
+
+fabric.Canvas.prototype.globalCompositeOperation = 'source-over';
+
 fabric.Canvas.prototype._prepareForDrawing = function(e) {
   this._isCurrentlyDrawing = true;
 
@@ -137,6 +139,7 @@ fabric.Canvas.prototype._prepareForDrawing = function(e) {
   this.contextTop.strokeStyle = this.freeDrawingColor;
   this.contextTop.lineWidth = this.freeDrawingLineWidth;
   this.contextTop.lineCap = this.contextTop.lineJoin = 'round';
+  this.contextTop.globalCompositeOperation = this.globalCompositeOperation;
 }
 
 fabric.Canvas.prototype.setActiveObjects = function(objects) {
@@ -239,6 +242,8 @@ console.log(path);
     p.fill = null;
     p.stroke = this.freeDrawingColor;
     p.strokeWidth = this.freeDrawingLineWidth;
+    console.log('this.globalCompositeOperation',this.globalCompositeOperation);
+    p.fillRule = this.globalCompositeOperation;
     if(undefined !== activeObject && null !== activeObject) {
       p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
       activeObject.add(p);

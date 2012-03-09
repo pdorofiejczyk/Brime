@@ -124,3 +124,7 @@ canvas#editor {
 #ellipse_tool {
   background: url(../img/icons/ellipse_tool.png) no-repeat 4px 4px;
 }
+
+#eraser_tool {
+  background: url(../img/icons/eraser_tool.png) no-repeat 4px 4px;
+}

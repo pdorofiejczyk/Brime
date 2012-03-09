@@ -19,17 +19,21 @@ var ToolBoxModule = new Class({
   
   _ellipse_tool: null,
   
+  _eraser_tool: null,
+  
   init: function() {
     this._transform_tool = new TransformTool();
     this._rectangle_tool = new RectangleTool();
     this._brush_tool = new BrushTool();
     this._ellipse_tool = new EllipseTool();
+    this._eraser_tool = new EraserTool();
     
     this._set_up_tools(
       this._transform_tool, 
       this._rectangle_tool,
       this._brush_tool,
-      this._ellipse_tool
+      this._ellipse_tool,
+      this._eraser_tool
     );
   },
   

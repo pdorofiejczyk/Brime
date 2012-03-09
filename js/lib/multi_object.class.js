@@ -50,6 +50,7 @@
     
     _render: function(ctx) {
       for(var i = 0, l = this.objects.length; i < l; i++) {
+        ctx.globalCompositeOperation = this.objects[i].fillRule;
         this.objects[i].render(ctx);
       }
     },
