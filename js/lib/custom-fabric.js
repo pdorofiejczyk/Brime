@@ -58,7 +58,14 @@ fabric.Canvas.prototype.add = function(obj) {
       group = new fabric.Group([obj]);
     break;
   }*/
-  var multi_obj = new fabric.MultiObject([obj]);
+  console.log('Canvas.add');
+  var multi_obj = null;
+  if(obj instanceof fabric.MultiObject) {
+    multi_obj = obj;
+  }
+  else {
+    multi_obj = new fabric.MultiObject([obj]);
+  }
   var activeObject = this.getActiveObject();
   if(activeObject != null) {
     var returned = this.insertAt(multi_obj, this._objects.indexOf(activeObject)+1);

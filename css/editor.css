@@ -120,3 +120,7 @@ canvas#editor {
 #brush_tool {
   background: url(../img/icons/brush_tool.png) no-repeat 4px 4px;
 }
+
+#ellipse_tool {
+  background: url(../img/icons/ellipse_tool.png) no-repeat 4px 4px;
+}
