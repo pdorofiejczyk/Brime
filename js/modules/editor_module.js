@@ -43,6 +43,7 @@ var EditorModule = new Class({
   },
   
   _on_obj_selected: function(obj) {
+  console.log('_on_obj_selected',obj);
      this._notify_all('objSelected', obj.memo.target);
   },
  

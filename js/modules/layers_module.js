@@ -76,7 +76,7 @@ var LayersModule = new Class({
     if(this._selected_layer != null) {
       this._selected_layer.deselect();
     }
-    console.log(obj.toString());
+    console.log(obj.toString(), this._obj_to_layer);
     this._selected_layer = this._obj_to_layer[obj[0] ? obj[0] : obj];
     this._selected_layer.select();
   },
@@ -169,7 +169,6 @@ var LayersModule = new Class({
     }
     
     console.log('layers', this._layers);
-    this.on_obj_selected(obj);
   }
   
   

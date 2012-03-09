@@ -55,6 +55,7 @@
     },
     
     add: function(object) {
+    console.log('add', object);
       this._restoreObjectsState();
       this.objects.push(object);
       this._modifyBounds(object);

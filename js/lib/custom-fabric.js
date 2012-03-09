@@ -58,15 +58,16 @@ fabric.Canvas.prototype.add = function(obj) {
       group = new fabric.Group([obj]);
     break;
   }*/
+  var multi_obj = new fabric.MultiObject([obj]);
   var activeObject = this.getActiveObject();
   if(activeObject != null) {
-    var returned = this.insertAt(obj, this._objects.indexOf(activeObject)+1);
+    var returned = this.insertAt(multi_obj, this._objects.indexOf(activeObject)+1);
   }
   else {
-    var returned = fabric.StaticCanvas.prototype.add.bind(this)(obj);
+    var returned = fabric.StaticCanvas.prototype.add.bind(this)(multi_obj);
   }
-  this.fire('object:created', obj);
-  this.setActiveObject(obj);
+  this.fire('object:created', multi_obj);
+  this.setActiveObject(multi_obj);
   
   return returned;
 }
@@ -214,27 +215,36 @@ fabric.Canvas.prototype._finalizeDrawingPath = function() {
   }
    var activeObject = this.getActiveObject();
 console.log('activeObject', activeObject);
-  if(undefined !== activeObject && null !== activeObject && activeObject.isType('path') && activeObject.stroke == this.freeDrawingColor && activeObject.strokeWidth == this.freeDrawingLineWidth) {
-  console.log('bf addToPath');
-  var p = new fabric.Path(path);
+  /*if(undefined !== activeObject && null !== activeObject && activeObject.isType('path') && activeObject.stroke == this.freeDrawingColor && activeObject.strokeWidth == this.freeDrawingLineWidth) {
+    console.log('bf addToPath');
+    var p = new fabric.Path(path);
   p.hasControls = false;
   p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
     activeObject.addToPath(p);
     this.renderAll();
+    activeObject.add(p);
     this.fire('object:modified', {target: activeObject});
-  }
-  else { 
+  }*/
+  //else { 
 console.log(path);
     var p = new fabric.Path(path);
     p.hasControls = false;
     p.fill = null;
     p.stroke = this.freeDrawingColor;
     p.strokeWidth = this.freeDrawingLineWidth;
-    this.add(p);
-    p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
-    this.renderAll();
-    this.fire('path:created', { path: p });
-  }
+    if(undefined !== activeObject && null !== activeObject) {
+      p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
+      activeObject.add(p);
+      this.renderAll();
+      this.fire('object:modified', {target: activeObject});
+    }
+    else {
+      this.add(p);
+      p.set("left", minX + (maxX - minX) / 2).set("top", minY + (maxY - minY) / 2).setCoords();
+      this.renderAll();
+      this.fire('path:created', { path: p });
+    }
+  //}
 }
 
 fabric.Path.prototype._parsePath = function(path) {
