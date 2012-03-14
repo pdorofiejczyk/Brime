@@ -259,6 +259,28 @@ console.log(path);
   //}
 }
 
+fabric.Canvas.prototype._createMiddleCanvas = function() {
+  this.middleCanvasEl = this._createCanvasElement();
+  this.middleCanvasEl.className = 'middle-canvas';
+        
+  this.wrapperEl.appendChild(this.middleCanvasEl);
+        
+  this._applyCanvasStyle(this.middleCanvasEl);
+  this.contextMiddle = this.middleCanvasEl.getContext('2d');
+}
+
+fabric.Canvas.prototype._initInteractive = function() {
+  this._currentTransform = null;
+  this._groupSelector = null;
+  this._freeDrawingXPoints = [ ];
+  this._freeDrawingYPoints = [ ];
+  this._initWrapperElement();
+  this._createMiddleCanvas();
+  this._createUpperCanvas();
+  this._initEvents();
+  this.calcOffset();
+}
+
 fabric.Path.prototype._parsePath = function(path) {
   var commandLengths = {
     m: 2,
