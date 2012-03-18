@@ -63,6 +63,9 @@
       this._updateObjectsCoords();
     },
     
+    clearAll: function() {
+      this.objects = [];
+    },
     
      _restoreObjectState: function(object) {
         

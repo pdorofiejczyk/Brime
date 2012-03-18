@@ -133,13 +133,40 @@ fabric.Canvas.prototype._prepareForDrawing = function(e) {
 
   this._freeDrawingXPoints.push(pointer.x);
   this._freeDrawingYPoints.push(pointer.y);
+  
+  var activeObject = this.getActiveObject();
+  var ao_id = this._objects.indexOf(activeObject);
+  var objects_length = this._objects.length;
+  
+  this.renderRange(ao_id+1, objects_length, this.contextTop);
+  activeObject.render(this.contextMiddle);
+  this.renderRange(0, ao_id, this.contextContainer);
 
-  this.contextTop.beginPath();
-  this.contextTop.moveTo(pointer.x, pointer.y);
-  this.contextTop.strokeStyle = this.freeDrawingColor;
-  this.contextTop.lineWidth = this.freeDrawingLineWidth;
-  this.contextTop.lineCap = this.contextTop.lineJoin = 'round';
-  this.contextTop.globalCompositeOperation = this.globalCompositeOperation;
+  this.contextMiddle.beginPath();
+  this.contextMiddle.moveTo(pointer.x, pointer.y);
+  this.contextMiddle.strokeStyle = this.freeDrawingColor;
+  this.contextMiddle.lineWidth = this.freeDrawingLineWidth;
+  this.contextMiddle.lineCap = this.contextTop.lineJoin = 'round';
+  this.contextMiddle.globalCompositeOperation = this.globalCompositeOperation;
+}
+
+fabric.Canvas.prototype._captureDrawingPath = function(e) {
+  var pointer = this.getPointer(e);
+
+  this._freeDrawingXPoints.push(pointer.x);
+  this._freeDrawingYPoints.push(pointer.y);
+
+  this.contextMiddle.lineTo(pointer.x, pointer.y);
+  this.contextMiddle.stroke();
+},
+
+fabric.Canvas.prototype.renderRange = function(from, to, ctx) {
+  this.clearContext(ctx);
+  for (var i = from; i < to; ++i) {
+    if (this._objects[i]) {
+      this._draw(ctx, this._objects[i]);
+    }
+  }
 }
 
 fabric.Canvas.prototype.setActiveObjects = function(objects) {
@@ -190,7 +217,7 @@ fabric.Group.prototype._calcBounds = function() {
 
 fabric.Canvas.prototype._finalizeDrawingPath = function() {
 
-  this.contextTop.closePath();
+  this.contextMiddle.closePath();
 
   this._isCurrentlyDrawing = false;
 
@@ -236,6 +263,9 @@ console.log('activeObject', activeObject);
     this.fire('object:modified', {target: activeObject});
   }*/
   //else { 
+  this.clearContext(this.contextTop);
+  this.clearContext(this.contextMiddle);
+  this.clearContext(this.contextContainer);
 console.log(path);
     var p = new fabric.Path(path);
     p.hasControls = false;
