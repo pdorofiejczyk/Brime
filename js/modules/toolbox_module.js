@@ -7,6 +7,8 @@ var ToolBoxModule = new Class({
   
   DEFAULT_TOOL: '_transform_tool',
   
+  _tool_options_box: null,
+  
   /**
    * Tools
    */
@@ -22,11 +24,14 @@ var ToolBoxModule = new Class({
   _eraser_tool: null,
   
   init: function() {
+  
     this._transform_tool = new TransformTool();
     this._rectangle_tool = new RectangleTool();
     this._brush_tool = new BrushTool();
     this._ellipse_tool = new EllipseTool();
     this._eraser_tool = new EraserTool();
+    
+    this._tool_options_box = new Element('div', {'id':'tool_options_box'});
     
     this._set_up_tools(
       this._transform_tool, 
@@ -35,6 +40,8 @@ var ToolBoxModule = new Class({
       this._ellipse_tool,
       this._eraser_tool
     );
+    
+    this._tool_options_box.inject(this._container);
   },
   
   select_default_tool: function() {
@@ -56,7 +63,12 @@ var ToolBoxModule = new Class({
       }
       
       tool.select();
+      
+      this._selected_tool.get_tool_options().dispose();
+      
       this._selected_tool = tool;
+      
+      this._selected_tool.get_tool_options().inject(this._tool_options_box);
       
       this.fireEvent('toolSelected', tool);
       console.log('select_tool');

@@ -59,5 +59,9 @@ var ToolAbstract = new Class({
   
   _on_mouse_move: function() {
     throw new Error('Method on_mouse_move is not implemented');
-  }
+  },
+  
+  get_tool_options: function() {
+    throw new Error('Method get_tool_options is not implemented');
+  },
 });
