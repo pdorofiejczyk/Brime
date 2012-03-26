@@ -25,8 +25,7 @@ var EraserTool = new Class({
         var activeObject = this.getActiveObject();
         
         fabric.Image.fromURL(activeObject.toDataURL('image/png'), function(img) {
-          activeObject.clearAll();
-          activeObject.add(img);
+          activeObject.create(img);
         });
         
         this.clearContext(this.contextTop);

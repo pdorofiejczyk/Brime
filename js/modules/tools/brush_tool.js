@@ -5,6 +5,7 @@ var BrushTool = new Class({
   
   _activate: function() {
     this._context.isDrawingMode = true;
+    this._tool_options['size'].set_value(this._context.freeDrawingLineWidth);
     console.log('drawing mode');
   },
   
@@ -38,6 +39,28 @@ var BrushTool = new Class({
         this._captureDrawingPath(e);
       }
     }
+  },
+  
+  _set_up_tool_options: function() {
+    this._tool_options_container = new Element('div');
+  
+    this._tool_options['size'] = new SizeToolOption();
+    this._tool_options['size'].addEvent('optionChanged', function(option) {
+      console.log('optionChanged', option.value);
+      this._context.freeDrawingLineWidth = option.value;
+      this._context.contextMiddle.lineWidth = option.value;
+    }.bind(this));
+    this._tool_options['size'].get_container().inject(this._tool_options_container);
+    
+    this._tool_options['color'] = new ColorToolOption();
+    this._tool_options['color'].get_container().inject(this._tool_options_container);
+    this._tool_options['color'].addEvent('optionChanged', function(option) {
+      
+      this._context.freeDrawingColor = 'rgba('+option.value[0]+', '+option.value[1]+', '+option.value[2]+', 1.0)';
+      console.log(this._context.freeDrawingColor);
+      this._context.contextMiddle.strokeStyle = this._context.freeDrawingColor;
+    }.bind(this));
+    
   }
   
 });

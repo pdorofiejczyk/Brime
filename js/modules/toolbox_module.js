@@ -59,12 +59,11 @@ var ToolBoxModule = new Class({
     if(tool != this._selected_tool) {
     
       if(this._selected_tool != null) {
+        this._selected_tool.get_tool_options().dispose();
         this._selected_tool.deselect();
       }
       
       tool.select();
-      
-      this._selected_tool.get_tool_options().dispose();
       
       this._selected_tool = tool;
       

@@ -16,10 +16,14 @@ var ToolOptionAbstract = new Class({
   },
   
   _on_option_changed: function(value) {
-    this.fireEvent('optionChanged', value);
+    this.fireEvent('optionChanged', {'value': value});
   },
   
   get_container: function() {
     return this._container;
+  },
+  
+  set_value: function() {
+    throw new Error('set_value have to be implemented');
   }
 });

@@ -34,7 +34,10 @@
     * @return {fabric.MultiObject} thisArg
     */
     initialize: function(objects, options) {
-      
+      this.create(objects, options);
+    },
+    
+    create: function(objects, options) {
       options = options || { };
       this.objects = objects || [ ];
       this._calcBounds();
@@ -46,6 +49,12 @@
       if (options.sourcePath) {
         this.setSourcePath(options.sourcePath);
       }
+    },
+    
+    recreate: function(object) {
+      object.set('top', this.get('top'));
+      object.set('left', this.get('left'));
+      this.create([object]);
     },
     
     _render: function(ctx) {
@@ -194,6 +203,47 @@
       
       this.left = (minX + width / 2) || 0;
       this.top = (minY + height / 2) || 0;
-    }
+    },
+    
+    
+     toDataURL: function(callback) {
+       var el = fabric.document.createElement('canvas');
+       if (!el.getContext && typeof G_vmlCanvasManager != 'undefined') {
+         G_vmlCanvasManager.initElement(el);
+       }
+ 
+       // TODO: should probably use bounding rectangle dimensions instead
+ 
+       el.width = this.getWidth();
+       el.height = this.getHeight();
+ 
+       fabric.util.wrapElement(el, 'div');
+
+       var canvas = new fabric.Canvas(el);
+       canvas.backgroundColor = 'transparent';
+       canvas.renderAll();
+ 
+       if (this.constructor.async) {
+         this.clone(proceed);
+       }
+       else {
+         proceed(this.clone());
+       }
+
+       function proceed(clone) {
+         clone.left = el.width / 2;
+         clone.top = el.height / 2;
+ 
+         clone.setActive(false);
+ 
+         canvas.add(clone);
+         var data = canvas.toDataURL('png');
+ 
+         canvas.dispose();
+         canvas = clone = null;
+ 
+         callback && callback(data);
+       }
+     }
   });
 })(typeof exports != 'undefined' ? exports : this);

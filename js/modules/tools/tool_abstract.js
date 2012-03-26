@@ -6,6 +6,10 @@ var ToolAbstract = new Class({
   
   _context: null,
   
+  _tool_options: {},
+  
+  _tool_options_container: null,
+  
   initialize: function() {
     this._icon = new Element('div', {'id': this._tool_name, 'class': 'tool'});
   },
@@ -61,7 +65,15 @@ var ToolAbstract = new Class({
     throw new Error('Method on_mouse_move is not implemented');
   },
   
+  _set_up_tool_options: function() {
+    this._tool_options_container = new Element('div');
+  },
+  
   get_tool_options: function() {
-    throw new Error('Method get_tool_options is not implemented');
+    if(!this._tool_options_container) {
+      this._set_up_tool_options();
+    }
+    
+    return this._tool_options_container;
   },
 });
